@@ -49,6 +49,12 @@ def validateStyleValue(
     help='If True, do not print the file names being checked to the terminal.',
 )
 @click.option(
+    '--vscode',
+    is_flag=True,
+    default=False,
+    help='If True, print the output in the simplified format understood by VS Code.',
+)
+@click.option(
     '--exclude',
     type=str,
     show_default=True,
@@ -174,6 +180,7 @@ def main(  # noqa: C901
         allow_init_docstring: bool,
         require_return_section_when_returning_none: bool,
         config: Optional[str],  # don't remove it b/c it's required by `click`
+        vscode: bool,
 ) -> None:
     """Command-line entry point of pydoclint"""
     ctx.ensure_object(dict)
@@ -225,7 +232,11 @@ def main(  # noqa: C901
                     fourSpaces = '    '
                     click.echo(fourSpaces, nl=False, err=echoAsError)
                     click.echo(
-                        f'{violation.line}: ', nl=False, err=echoAsError
+                        f'{filename}:{violation.line}: '
+                        if vscode
+                        else f'{violation.line}: ',
+                        nl=False,
+                        err=echoAsError,
                     )
                     click.echo(
                         click.style(
